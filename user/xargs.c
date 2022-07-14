@@ -16,7 +16,7 @@ int main(int argc, char *argv[]){
         args[i-1] = argv[i];
     }
     
-    while((n = read(0, &buf, 1)) > 0){
+    while((n = read(0, &buf, 1)) > 0){//｜前面的直接作为输入
         if(buf == '\n'){
             arg[arg_index] = '\0';
 
