@@ -120,6 +120,22 @@ walkaddr(pagetable_t pagetable, uint64 va)
   return pa;
 }
 
+int vm_pgaccess(pagetable_t pagetable, uint64 va){
+  pte_t *pte;
+
+  if(va >= MAXVA)
+    return 0;
+
+  pte = walk(pagetable, va, 0);
+  if(pte == 0)
+    return 0;
+  if((*pte & PTE_A) != 0){
+    *pte = *pte & (~PTE_A);
+    return 1;
+  }
+  return 0;
+}
+
 // add a mapping to the kernel page table.
 // only used when booting.
 // does not flush TLB or enable paging.

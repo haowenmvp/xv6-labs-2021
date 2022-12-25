@@ -80,7 +80,32 @@ sys_sleep(void)
 int
 sys_pgaccess(void)
 {
-  // lab pgtbl: your code here.
+  uint64 addr;
+  int len;
+  int bitmask;
+  int res = 0;
+  if(argaddr(0, &addr) < 0)
+    return -1;
+
+  if(argint(1, &len) < 0)
+    return -1;
+
+  if(argint(2, &bitmask) < 0)//传进来的不是地址吗，为什么是传int
+    return -1;
+
+  if(len > 32 || len < 0)
+    return -1;
+
+  struct proc *p = myproc();
+
+  for(int i = 0; i < len; i++){
+    int va = addr + i * PGSIZE;
+    int abit = vm_pgaccess(p->pagetable, va);
+    res = res | abit << i;
+  }
+  if(copyout(p->pagetable, bitmask, (char *)&res, sizeof(res)) < 0)
+      return -1;
+  
   return 0;
 }
 #endif
@@ -88,10 +113,10 @@ sys_pgaccess(void)
 uint64
 sys_kill(void)
 {
-  int pid;
+ int pid;
 
   if(argint(0, &pid) < 0)
-    return -1;
+    return -1; 
   return kill(pid);
 }
 
